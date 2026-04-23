@@ -1,0 +1,36 @@
+name: Build Windows EXE
+
+# This tells GitHub to run the process every time you update your code
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # This is where we request a Windows machine!
+    runs-on: windows-latest
+
+    steps:
+    - name: Get the code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Compile the code into an EXE
+      run: |
+        pyinstaller --onefile process_logs.py
+
+    - name: Upload the finished EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: process_logs_windows_exe
+        path: dist/process_logs.exe
